@@ -1,0 +1,109 @@
+#!/bin/sh
+# Copyright 2018 V. Slobodyan  
+# vslobodyan@outlook.com  https://github.com/vslobodyan
+#
+# Actions with the active Gnome 3 (Shell) window.
+# Compatible with Wayland.
+# A working replacement for some functions in wmctrl and xdotool.
+#
+#
+# It is based on the source code of the gnome-magic-window by Adrien Vergé
+
+set -eu
+
+SCRIPT_NAME=$0
+SHORT_SCRIPT_NAME=${SCRIPT_NAME##*/}
+# this solution should work in all recent (post 2004) POSIX compliant shells, (e.g. bash, dash, ksh, etc.).
+# Source: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+
+LINK_PATH="/usr/local/bin"
+
+
+function usage() {
+  echo "Usage: $SHORT_SCRIPT_NAME COMMAND" >&2
+  echo "Where COMMAND can be one of the following options:" >&2
+
+  echo -e "  min \t\t descripton" >&2
+  echo -e  "  close \t descripton" >&2
+#  echo "  info" >&2
+#  echo "  undecorate" >&2
+#  echo "  undecorate" >&2
+  echo "  ------------------------------"
+  echo -e  "  install \t Сreate a symbolic link to this script at $LINK_PATH" >&2
+  echo -e  "  uninstall \t Removing a symbolic link to this script from $LINK_PATH" >&2
+
+  exit 1
+}
+
+function fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+
+function install() {
+  SCRIPT_PATH=`pwd`
+  SCRIPT_FILENAME="$SCRIPT_PATH/$SCRIPT_NAME"
+  echo "Now a symbolic link to this script will be created in the following directory:"
+  echo "$LINK_PATH"
+  echo "After that, you can run a script with a short name '$SHORT_SCRIPT_NAME' from any path."
+  sudo ln -s $SCRIPT_FILENAME $LINK_PATH
+  echo "Done."
+ }
+
+
+function uninstall() {
+  LINK_NAME="$LINK_PATH/$SHORT_SCRIPT_NAME"
+  echo "Now a symbolic link to this script will be removed:"
+  echo "$LINK_NAME"
+  sudo rm $LINK_NAME
+  echo "Done."
+}
+
+
+function gnome_looking_glass() {
+  local ret
+  ret="$(gdbus call --session --dest org.gnome.Shell \
+         --object-path /org/gnome/Shell \
+         --method org.gnome.Shell.Eval "$1")"
+  [ "${ret:0:8}" = "(true, '" ] \
+    || fail "bad output from Gnome looking glass: $ret"
+  [ -n "${ret:8:-2}" ] && echo "${ret:8:-2}"
+}
+
+#TODO: get info about active window
+
+#function get_active_window_info() {
+#  gnome_looking_glass "
+#    global.display.focus_window.toString();
+#  "
+#}
+
+function minimize_active_window() {
+  gnome_looking_glass "
+    global.display.focus_window.minimize();
+  "
+}
+
+function close_active_window() {
+  gnome_looking_glass "
+    global.display.focus_window.delete(global.get_current_time());
+  "
+}
+
+
+#TODO: undecorate win
+
+#TODO: send fake keyboard input
+
+if [ $# -eq 1 ] && [ "$1" = "min" ]; then
+  minimize_active_window
+elif [ $# -eq 1 ] && [ "$1" = "close" ]; then
+  close_active_window
+elif [ $# -eq 1 ] && [ "$1" = "install" ]; then
+  install
+elif [ $# -eq 1 ] && [ "$1" = "uninstall" ]; then
+  uninstall
+else
+  usage
+fi
