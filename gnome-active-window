@@ -23,8 +23,8 @@ function usage() {
   echo "Usage: $SHORT_SCRIPT_NAME COMMAND" >&2
   echo "Where COMMAND can be one of the following options:" >&2
 
-  echo -e "  min \t\t descripton" >&2
-  echo -e  "  close \t descripton" >&2
+  echo -e "  min \t\t Minimize the active window" >&2
+  echo -e  "  close \t Gently close the active window" >&2
 #  echo "  info" >&2
 #  echo "  undecorate" >&2
 #  echo "  undecorate" >&2
