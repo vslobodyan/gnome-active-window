@@ -20,7 +20,6 @@ Where COMMAND can be one of the following options:
 | --- | --- |
 |`min` | Minimize the active window. |
 |`close` | Gently close the active window. |
-| | |
 | `install` | Сreate a symbolic link to this script at `/usr/local/bin`. After that, you can run a script with a short name `gnome-active-window` from any path. |
 | `uninstall` | Removing a symbolic link to this script from `/usr/local/bin` |
 
