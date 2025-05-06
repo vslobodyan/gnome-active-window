@@ -9,6 +9,13 @@
 #
 # It is based on the source code of the gnome-magic-window by Adrien Vergé
 
+# UPDATE:
+# https://unix.stackexchange.com/questions/392437/how-can-i-minimise-all-gnome-wayland-windows-from-the-command-line
+
+# Sadly, this no longer works on Gnome 41 for security reasons
+# Running global.context.unsafe_mode = true in Looking Glass re-enables the functionality, but only temporarily.
+
+
 set -eu
 
 SCRIPT_NAME=$0
